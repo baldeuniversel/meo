@@ -1,0 +1,65 @@
+
+OPTIONS
+       self-update
+                         This option allows to verify if there is a new version of meo program
+                         that is ready to upgrade, and it also allows to update the list of
+                         packages available on the Github repository
+                         Ex : meo self-update
+
+       install
+                         This option allows installing packages
+                         Ex : meo install am-okay
+
+       update
+                         This option allows listing the packages ready to upgrade
+                         Ex : meo update
+
+       upgrade
+                         This option allows upgrading the packages ready to upgrade
+                         Ex : meo upgrade (to upgrade all the installed packages by meo program)
+                         Ex : meo upgrade am-okay (to upgrade the target installed package by meo program)
+
+       remove
+                         This option allows removing packages
+                         Ex : meo remove am-okay
+
+       download
+                         This option allows to download packages
+                         Ex : meo download am-okay
+
+       list
+                         This option allows listing packages of the git repository
+                         Ex : meo list
+                         Note: To have the updated list, you have first of all to execute the command
+                         meo self-update
+
+       list-installed
+                         This option allows listing the installed packages from the git repository
+                         Ex : meo list-installed
+
+       search
+                         This option allows to search packages from the git repository
+                         Ex : meo search am-okay
+
+       show
+                         This option allows to have information on the installed packages from the
+                         `control` files
+                         Ex : meo show am-okay
+
+       info
+                         This option allows to get information about a available package from the Github
+                         repository `https://github.com/baldeuniversel/linux.git` (since the last execution of the
+                                                                            ( command `sudo meo update` )
+                         Ex : meo info am-okay
+
+       --help
+                         This option allows getting help on the `meo` program
+                         Ex : meo --help
+
+       --doc
+                         This option allows getting a documentation on `meo` program
+                         Ex : meo --doc
+
+       --version
+                         This option allows getting the version installed of the `meo` program
+                         Ex : meo --version

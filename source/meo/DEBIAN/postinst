@@ -1,0 +1,175 @@
+#!/usr/bin/bash
+
+#####
+# postinst script
+####
+
+
+set -uo pipefail
+
+
+
+# Declaration variables
+getTheDebProgram=""
+getTheInfoPkg=""
+getTheReadmeFile=""
+
+getMngDebDirectory="/usr/lib/meo/library/packages-info/meo/deb"
+getMngInfoDirectory="/usr/lib/meo/library/packages-info/meo/info"
+getTmpCloneGit="/tmp/.$USER/meo/download-branch"
+getBranch="meo"
+getProgram="meo"
+getNameInfoPkg="info-pkg"
+getURL="https://github.com/baldeuniversel/linux.git"
+
+meoTmpDir="/tmp/.$USER/meo/github"
+meoInfoDir="/usr/lib/meo/library/info"
+meoListAvailablePkgsPure="/usr/lib/meo/library/info/list-available-packages-pure"
+meoListAvailablePkgs="/usr/lib/meo/library/info/list-available-packages"
+meoListInstalledPkgsPure="/usr/lib/meo/library/info/list-installed-packages-pure"
+
+getCurrentFileVersionPkgs="current-version-pkgs"
+getURL="https://github.com/baldeuniversel/linux.git"
+
+
+
+# Create some directories
+if [[ ! -e "$meoInfoDir" ]]
+then
+    #
+    mkdir -p "$meoInfoDir" 2> /dev/null
+
+    if [[ $? -ne 0 ]]
+    then
+        echo "~"
+        echo -e "Something is wrong, make sure you have the right to install packages \U001F6A8 "
+
+        exit 1
+    fi
+fi
+#
+if [[ ! -e "$getMngDebDirectory" ]]
+then
+    #
+    mkdir -p "$getMngDebDirectory" 2> /dev/null
+else
+    #
+    rm -fr "$getMngDebDirectory" 2> /dev/null
+    
+    mkdir -p "$getMngDebDirectory" 2> /dev/null
+fi
+#
+if [[ ! -e "$getMngInfoDirectory" ]]
+then
+    #
+    mkdir -p "$getMngInfoDirectory" 2> /dev/null
+else
+    #
+    rm -fr "$getMngInfoDirectory" 2> /dev/null
+    
+    mkdir -p "$getMngInfoDirectory" 2> /dev/null
+fi
+#
+if [[ -e "$getTmpCloneGit" ]]
+then
+    rm -fr "$getTmpCloneGit" 2> /dev/null
+else
+    mkdir -p "$getTmpCloneGit" 2> /dev/null
+fi
+#
+if [[ -e "$meoTmpDir" ]]
+then 
+    rm -fr "$meoTmpDir" 2> /dev/null
+else
+    mkdir -p "$meoTmpDir" 2> /dev/null
+fi
+
+
+
+# Clone the branch
+git clone --branch "$getBranch" --single-branch --depth 1 "$getURL" "$getTmpCloneGit/linux" 2> /dev/null
+
+#
+if [[ ! ( $? -eq 0 ) ]]
+then
+    echo ""
+    echo "~"
+    echo -e "Your internet connection seems not to be established \U001F30D "
+    echo ""
+
+    exit 1
+fi
+
+
+
+### Sequence for the `deb` package management` -> start tag[m0]
+#
+getTheDebProgram=` find "$getTmpCloneGit/linux/package" -name "$getProgram*.deb" -type f 2> /dev/null ` 
+getTheInfoPkg=` find "$getTmpCloneGit/linux/package" -name "$getNameInfoPkg" -type f 2> /dev/null `
+getTheReadmeFile=` find "$getTmpCloneGit/linux/package" -name "readme" -type f 2> /dev/null `
+
+# Move the deb program
+mv "$getTheDebProgram" "$getMngDebDirectory" 2> /dev/null
+mv "$getTheInfoPkg" "$getMngInfoDirectory" 2> /dev/null
+mv "$getTheReadmeFile" "$getMngInfoDirectory" 2> /dev/null
+
+### Sequence for the `deb` package management` -> end tag[m0]
+
+
+
+### Sequence for the deployment some useful files -> start tag[s0]
+#
+# Clone the git repository
+git clone --branch "$getCurrentFileVersionPkgs" --single-branch --depth 1 "$getURL" "$meoTmpDir/linux" 2> /dev/null
+
+#
+if [[ $? -ne 0 ]]
+then
+    echo ""
+    echo "~"
+    echo -e "Your internet connection seems not to be established \U001F30D "
+    echo ""
+
+    exit 1
+fi
+
+#
+if [[ $? -eq 0 ]]
+then
+    
+    # Action to save in another files the content of the file that contents the available packages
+    find "$meoTmpDir/linux"  -name "current-version-pkgs" -type f -exec \
+        cat {} \; | grep -A 2 "package" | awk '{ gsub(/^[[:space:]]*|,|--/, "");  print }' > $meoListAvailablePkgsPure
+
+    #
+    find "$meoTmpDir/linux"  -name "current-version-pkgs" -type f -exec \
+        cat {} \; | grep -A 2 "package" | awk '{ gsub(/^[[:space:]]*|,|--/, ""); print }' | \
+        awk -F ": " 'length($0) > 3 && NF > 0 {printf "\033[1;036m%s\033[0m: \033[1;32m%s\033[0m\n", $1, $2}; \
+        length($0) < 3 && NF <= 0 {print}' > $meoListAvailablePkgs
+fi
+
+### Sequence for the deployment some useful files -> end tag[s0]
+
+
+
+# Remove the `tmp/..` directory
+if [[ -e "$getTmpCloneGit" ]]
+then
+    # 
+    rm -fr "$getTmpCloneGit" 2> /dev/null
+fi
+
+# Remove `...meo..github/...` directory in /tmp
+if [[ -e "$meoTmpDir"  ]]
+then
+    rm -rf "$meoTmpDir" 2> /dev/null
+fi
+
+
+
+# Just to print the name of the author
+echo ""
+echo ""
+echo "~"
+
+tput setaf 6; tput bold; echo "By Baldé ~" `tput sgr0` 2> /dev/null

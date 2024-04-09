@@ -1,0 +1,57 @@
+#!/usr/bin/bash
+
+#
+set -uo pipefail
+
+
+#####
+# Action before deploying the program 
+#####
+
+
+# Declaration variables
+#
+getOS=""
+
+meoListInstalledPkgsPure="/usr/lib/meo/library/info/list-installed-packages-pure"
+
+
+
+#
+if [[ -e "$meoListInstalledPkgsPure" ]]
+then
+    #
+    sed -i "/meo/d" "$meoListInstalledPkgsPure" 2> /dev/null
+fi
+
+
+
+### Action on the directory `/tmp` and ... -> start  tag[0]
+if [[ ! ( -e "/tmp" ) ]]
+then
+
+    mkdir -p /tmp 2> /dev/null
+    chmod 777 /tmp 2> /dev/null
+
+    # Check the return value of the last command <<mkdir>>
+    if [[ $? -ne 0 ]]
+    then
+        echo "~"
+        echo "This program is not compatible with your system ."
+        exit 1
+    fi
+
+    # Get kernel
+    getOS=` uname --operating-system `
+
+    #
+    if [[ $getOS != "GNU/Linux" ]]
+    then
+        echo "~"
+        echo "This program is not compatible with your system ."
+        exit 1
+    fi
+
+fi
+
+### Action on the directory `/tmp` and ... -> end tag[0]
