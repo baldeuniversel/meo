@@ -9,7 +9,7 @@ the packages that are on the `baldeuniversel/linux` repository .
 
 **Hash-package** : **md5sum(d86f38dcb03aa379b72133e5c9a90f04)**
 <br />
-**Code-name** : **Ve-Quantic**
+**Codename** : **ve-quantic**
 
 
 After installing the **meo** program, from your terminal execute this command
